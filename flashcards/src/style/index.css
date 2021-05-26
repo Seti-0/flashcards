@@ -1,0 +1,226 @@
+body {
+    font-family: "Trebuchet MS";
+}
+
+/*
+
+    CARD VIEWER
+
+ */
+
+.card-viewer {
+    background-color: dodgerblue;
+    padding: 2em;
+}
+
+.card {
+    background-color: #fff;
+    box-shadow: 0 0 5px;
+    margin: auto;
+    display: inline-grid;
+    grid: "content config" auto
+          "nav config" auto
+        / auto auto
+}
+
+/*
+
+    CARD VIEWER: CONTENT
+
+ */
+
+.card-content {
+    padding: 2em;
+    grid-area: content;
+}
+
+.card-header {
+    font-size: 2em;
+}
+
+.card-config-toggle {
+    float: right;
+    width: 1em;
+    filter: invert(1) brightness(0.7);
+}
+
+.card-config-toggle:hover {
+    filter: invert(1) brightness(0.5);
+}
+
+.card-details {
+    margin: 2em 1em;
+}
+
+.card-content-options {
+    margin: 1em;
+}
+
+.answer-option {
+    border: 1px solid #ccc;
+    display: block;
+    margin: 0.3em 0;
+    padding: 1em;
+}
+
+.answer-option:hover {
+    border-color: #9dcfff;
+}
+
+.answer-number {
+    margin: 0 1em;
+}
+
+.answer-option.selected {
+    border-color: dodgerblue;
+    background-color: #d3e5f7;
+}
+
+.answer-option.correct {
+    border-color: forestgreen;
+    background-color: #e1f7e1;
+}
+
+.answer-option.incorrect {
+    border-color: darkred;
+    background-color: #fed9d9;
+}
+
+.show-answer {
+    font-size: 1em;
+    margin: 1em 3em;
+    padding: 0.5em 1em;
+}
+
+.hide-answer {
+    margin-right: 1em;
+}
+
+.card-answer {
+    background-color: #eee;
+    border: 1px solid #aaa;
+    padding: 1em;
+}
+
+/*
+
+    CARD VIEW: CONFIG PANE
+
+ */
+
+.card-config {
+    padding: 1em;
+    background-color: #ddd;
+    grid-area: config;
+    border-left: 1px solid;
+}
+
+.card-config-title {
+    margin-bottom: 0.3em;
+    color: #444;
+}
+
+.card-difficulty {
+    margin-bottom: 1.5em;
+}
+
+.card-difficulty li {
+    display: inline-block;
+}
+
+.card-difficulty img {
+    width: 1em;
+}
+
+.card-label {
+    margin-top: 0.6em;
+    padding: 0.3em;
+    border-radius: 0.2em;
+}
+
+.card-label p {
+    display: inline;
+    margin-right: 0.5em;
+}
+
+.card-label img {
+    width: 0.8em;
+    margin: 0 0.1em;
+    float: right;
+    padding: 0.1em;
+    border-radius: 0.2em;
+}
+
+.card-label img:hover {
+    background-color: #f77;
+}
+
+.card-labels-add {
+    text-align: center;
+    margin-top: 0.6em;
+    padding: 0.3em;
+    border-radius: 0.2em;
+}
+
+.card-labels-add:hover {
+    background-color: #ccc;
+}
+
+.card-labels-add img {
+    width: 0.8em;
+    margin: 0.1em;
+    filter: brightness(0.5);
+}
+
+.grey {
+    color: white;
+    background-color: #ccc;
+}
+
+.red {
+    color: white;
+    background-color: red;
+}
+
+.blue {
+    color: white;
+    background-color: dodgerblue;
+}
+
+.purple {
+    color: white;
+    background-color: mediumpurple;
+}
+
+/*
+
+    NAVIGATION
+
+ */
+
+.nav {
+    grid-area: nav;
+}
+
+.nav-home, .nav-page {
+    display: inline-flex;
+    align-items: center;
+    margin: 1em;
+    padding: 1em;
+
+}
+
+.card-viewer-nav img {
+    width: 2em;
+    filter: invert(1) brightness(0.7);
+    display: inline-block;
+}
+
+.card-viewer-nav img:hover {
+    filter: invert(1) brightness(0.5);
+}
+
+.nav-page-number {
+    display: inline;
+    margin: 0 0.5em;
+}
