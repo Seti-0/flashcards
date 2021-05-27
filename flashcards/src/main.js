@@ -1,16 +1,23 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
 
+//try {
+  require('electron-reloader')(module);
+//} catch {}
+
 function createWindow () {
   const win = new BrowserWindow({
-    width: 800,
+    width: 1000,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   })
 
-  win.loadFile('index.html')
+  win.setMenu(null)
+  win.webContents.openDevTools()
+
+  win.loadFile('src/index.html')
 }
 
 app.whenReady().then(() => {

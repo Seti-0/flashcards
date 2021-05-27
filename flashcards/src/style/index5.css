@@ -1,0 +1,235 @@
+body {
+    font-family: "Trebuchet MS";
+    background-color: #ccc;
+}
+
+/*
+
+    HEADER
+
+ */
+
+.home-header {
+    text-align: center;
+    background-color: #fff;
+    border-bottom: 0.1em solid #aaa;
+    border-top: 0.1em solid #aaa;
+    padding: 0.2em;
+}
+
+.home-header-title {
+    margin-bottom: 0.3em;
+    color: #444;
+}
+
+.home-header > section {
+    margin-left: 4em;
+    display: inline-block;
+}
+
+/*
+
+    FILTER: COMPLETION
+
+ */
+
+.filter-completion label {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 0.4em;
+}
+
+.filter-completion li {
+    display: inline-block;
+}
+
+.filter-completion img {
+    width: 1em;
+}
+
+.filter-correct {
+    filter: hue-rotate(120deg);
+}
+
+.filter-untried {
+    filter: hue-rotate(240deg);
+}
+
+/*
+
+    FILTER: DIFFICULTY
+
+ */
+
+.filter-difficulty li {
+    display: inline-block;
+}
+
+.filter-difficulty img {
+    width: 1em;
+}
+
+/*
+
+    FILTER: LABELS
+
+ */
+
+.filter-label-list {
+    font-size: 0.8em;
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-label-list > * {
+    margin: 0.1em 0.8em 0.1em 0;
+    border-radius: 0.2em;
+    display: inline-block;
+}
+
+.filter-label {
+    padding: 0.3em;
+}
+
+.filter-label p {
+    display: inline;
+    margin-right: 0.5em;
+}
+
+.filter-label img {
+    width: 0.8em;
+    margin: 0 0.1em;
+    float: right;
+    padding: 0.1em;
+    border-radius: 0.2em;
+}
+
+.filter-label img:hover {
+    background-color: #f77;
+}
+
+.filter-labels-add {
+    text-align: center;
+    padding: 0.3em;
+}
+
+.filter-labels-add:hover {
+    background-color: #ccc;
+}
+
+.filter-labels-add img {
+    width: 0.8em;
+    margin: 0.1em;
+    filter: brightness(0.5);
+}
+
+.grey {
+    color: white;
+    background-color: #aaa;
+}
+
+.red {
+    color: white;
+    background-color: red;
+}
+
+.blue {
+    color: white;
+    background-color: dodgerblue;
+}
+
+.purple {
+    color: white;
+    background-color: mediumpurple;
+}
+
+/*
+
+    CARDS
+
+ */
+
+.card {
+    margin: 0.5em;
+    display: flex;
+    align-items: center;
+    padding: 0.1em;
+    background-color: white;
+    #box-shadow: 0 0 3px;
+    border: 1px solid #aaa;
+}
+
+.card > * {
+    display: inline-block;
+    margin: 0.3em 1.5em 0.3em 0;
+}
+
+.card img {
+    width: 1em;
+}
+
+.card-completion {
+    margin-right: 0.6em;
+    margin-left: 0.6em;
+}
+
+.card-difficulty li {
+    display: inline-block;
+}
+
+.card-correct {
+    filter: hue-rotate(120deg);
+}
+
+.card-untried {
+    filter: hue-rotate(240deg);
+}
+
+.card-labels {
+    font-size: 0.8em;
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.card-label {
+    padding: 0.3em;
+    margin: 0.1em 0.8em 0.1em 0;
+    border-radius: 0.2em;
+    display: inline-block;
+}
+
+.card-label p {
+    display: inline;
+    margin-right: 0.5em;
+}
+
+.card-label img {
+    width: 0.8em;
+    margin: 0 0.1em;
+    float: right;
+    padding: 0.1em;
+    border-radius: 0.2em;
+}
+
+.card-label img:hover {
+    background-color: #f77;
+}
+
+.card-labels-add {
+    text-align: center;
+    padding: 0.3em;
+    border-radius: 0.2em;
+    display: inline-block;
+}
+
+.card-labels-add:hover {
+    background-color: #ccc;
+}
+
+.card-labels-add img {
+    width: 0.8em;
+    margin: 0.1em;
+    filter: brightness(0.5);
+}

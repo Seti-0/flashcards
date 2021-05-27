@@ -1,92 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
     <link rel="stylesheet" href="style/reset.css">
-    <link rel="stylesheet" href="style/index.css">
-    <script src="scripts/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="style/index5.css">
+    <script src="scripts/data.js"></script>
+    <script src="libraries/jquery-3.6.0.min.js"></script>
+    <script src="scripts/index.js" defer></script>
 </head>
 <body>
-    <div class="card-viewer">
-        <div class="card">
-            <div class="card-content">
-                <div class="question">
-                    <h1 class="card-header">
-                        What is a Hammard Operator ?
-                        <img class="card-config-toggle" alt="options" src="images/gear-option.svg">
-                    </h1>
-                    <p class="card-details">
-                        Well, as a matrix, it's [1,1;1,-1]. But what
-                        does that mean, intuitively?
-                    </p>
-                    <ol class="card-answer-options">
-                        <li class="answer-option">
-                            <span class="answer-number">2)</span>
-                            Conditional.
-                        </li>
-                        <li class="answer-option selected">
-                            <span class="answer-number">2)</span>
-                            Conditional.
-                        </li>
-                        <li class="answer-option correct">
-                            <span class="answer-number">2)</span>
-                            Conditional.
-                        </li>
-                        <li class="answer-option incorrect">
-                            <span class="answer-number">2)</span>
-                            Conditional.
-                        </li>
-                    </ol>
-                </div>
-                <button class="show-answer">Show Answer</button>
-                <p class="card-answer">
-                    <button class="hide-answer">Hide</button>
-                    Red, obviously. It's the only color. 42 is acceptable as well.
-                </p>
-            </div>
-            <div class="card-config">
-                <div class="card-difficulty">
-                    <h2 class="card-config-title">Difficulty</h2>
-                    <ol>
-                        <li><img alt="options" src="images/star-filled.svg"></li>
-                        <li><img alt="options" src="images/star-empty.svg"></li>
-                        <li><img alt="options" src="images/star-empty.svg"></li>
-                        <li><img alt="options" src="images/star-empty.svg"></li>
-                        <li><img alt="options" src="images/star-empty.svg"></li>
-                    </ol>
-                </div>
-                <div class="card-labels">
-                    <h2 class="card-config-title">Labels</h2>
-                    <ol>
-                        <li class="card-label red">
-                            <p>Quantum</p>
-                            <img alt="edit" src="images/draw.svg">
-                            <img alt="delete" src="images/delete.svg">
-                        </li>
-                        <li class="card-label purple">Programming</li>
-                        <li class="card-label blue">
-                            <p>Linear Algebra</p>
-                            <img alt="edit" src="images/draw.svg">
-                            <img alt="delete" src="images/delete.svg">
-                        </li>
-                        <li class="card-label grey">Choice</li>
-                        <li class="card-labels-add"><img alt="add" src="images/add.svg"></li>
-                    </ol>
-                </div>
-            </div>
-            <nav class="card-viewer-nav">
-                <div class="nav-home">
-                    <img alt="home" class="nav-home-img" src="images/home.svg">
-                </div>
-                <div class="nav-page">
-                    <img alt="left" class="nav-page-left" src="images/left.svg">
-                    <p class="nav-page-number">1/10</p>
-                    <img alt="right" class="nav-page-right" src="images/right.svg">
-                </div>
-            </nav>
-        </div>
-    </div>
+<!--<div class="card-viewer"></div>
+<script>$(".card-viewer").load("includes/card-view.html")</script>!-->
+<header class="home-header">
+    <section class="filter-completion">
+        <h2 class="home-header-title">Completion</h2>
+        <ol>
+            <li>
+                <label>
+                    <img class="filter-incorrect" alt="incorrect" src="images/red-dot.svg">
+                    <input type="checkbox">
+                </label>
+            </li>
+            <li>
+                <label>
+                    <img class="filter-correct" alt="correct" src="images/red-dot.svg">
+                    <input type="checkbox">
+                </label>
+            </li>
+            <li>
+                <label>
+                    <img class="filter-untried" alt="untried" src="images/red-dot.svg">
+                    <input type="checkbox">
+                </label>
+            </li>
+        </ol>
+    </section>
+    <section class="filter-difficulty">
+        <h2 class="home-header-title">Difficulty</h2>
+        <ol>
+            <li><img alt="star" src="images/star-filled-gold.svg"></li>
+            <li><img alt="star" src="images/star-filled-gold.svg"></li>
+            <li><img alt="star" src="images/star-filled.svg"></li>
+            <li><img alt="star" src="images/star-empty.svg"></li>
+            <li><img alt="star" src="images/star-empty.svg"></li>
+        </ol>
+    </section>
+    <section class="filter-labels">
+        <h2 class="home-header-title">Labels</h2>
+        <ul class="filter-label-list">
+            <li class="filter-label red">
+                <p>Quantum</p>
+                <img alt="delete" src="images/delete.svg">
+                <img alt="edit" src="images/draw.svg">
+            </li>
+            <li class="filter-label purple">Programming</li>
+            <li class="filter-label blue">
+                <p>Linear Algebra</p>
+                <img alt="delete" src="images/delete.svg">
+                <img alt="edit" src="images/draw.svg">
+            </li>
+            <li class="filter-label grey">Choice</li>
+            <li class="filter-labels-add"><img alt="add" src="images/add.svg"></li>
+        </ul>
+    </section>
+</header>
+<section class="cards">
+    <section class="card">
+        <img class="card-completion card-incorrect" alt="correct" src="images/red-dot.svg">
+        <p class="card-title">
+            Quantum States #2
+        </p>
+        <ol class="card-difficulty">
+            <li><img alt="star" src="images/star-filled.svg"></li>
+            <li><img alt="star" src="images/star-filled.svg"></li>
+            <li><img alt="star" src="images/star-filled.svg"></li>
+            <li><img alt="star" src="images/star-empty.svg"></li>
+            <li><img alt="star" src="images/star-empty.svg"></li>
+        </ol>
+        <ul class="card-labels">
+            <li class="card-label red">
+                <p>Quantum</p>
+                <img alt="delete" src="images/delete.svg">
+                <img alt="edit" src="images/draw.svg">
+            </li>
+            <li class="card-label purple">Programming</li>
+            <li class="card-label blue">
+                <p>Linear Algebra</p>
+                <img alt="delete" src="images/delete.svg">
+                <img alt="edit" src="images/draw.svg">
+            </li>
+            <li class="card-labels-add"><img alt="add" src="images/add.svg"></li>
+        </ul>
+    </section>
+    <section class="card">
+        <img class="card-completion card-correct" alt="correct" src="images/red-dot.svg">
+        <p class="card-title">
+            Quantum States #3
+        </p>
+        <ol class="card-difficulty">
+            <li><img alt="star" src="images/star-filled.svg"></li>
+            <li><img alt="star" src="images/star-filled.svg"></li>
+            <li><img alt="star" src="images/star-empty.svg"></li>
+            <li><img alt="star" src="images/star-empty.svg"></li>
+            <li><img alt="star" src="images/star-empty.svg"></li>
+        </ol>
+        <ul class="card-labels">
+            <li class="card-label red">
+                <p>Quantum</p>
+                <img alt="delete" src="images/delete.svg">
+                <img alt="edit" src="images/draw.svg">
+            </li>
+            <li class="card-label purple">Programming</li>
+            <li class="card-label blue">
+                <p>Linear Algebra</p>
+                <img alt="delete" src="images/delete.svg">
+                <img alt="edit" src="images/draw.svg">
+            </li>
+            <li class="card-labels-add"><img alt="add" src="images/add.svg"></li>
+        </ul>
+    </section>
+</section>
 </body>
 </html>
