@@ -1,26 +1,45 @@
-body {
-    font-family: "Trebuchet MS";
-}
-
 /*
 
     CARD VIEWER
 
  */
 
-.card-viewer {
+.cardview {
     background-color: dodgerblue;
+    height: calc(100vh - 4em);
     padding: 2em;
 }
 
-.card {
+.cardview-card {
     background-color: #fff;
     box-shadow: 0 0 5px;
-    margin: auto;
-    display: inline-grid;
-    grid: "content config" auto
-          "nav config" auto
-        / auto auto
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid: "content config" 1fr
+          "footer footer" auto
+        / 1fr auto;
+    justify-items: stretch;
+}
+
+/*
+
+    COMMON
+
+ */
+
+[contenteditable=true]:empty:before {
+    content: attr(data-placeholder);
+    color: #aaaaaa;
+    font-style: normal;
+}
+
+.cardview-footer img, .cardview-option-delete img {
+    filter: brightness(0.7);
+}
+
+.cardview-footer img:hover, .cardview-option-delete img:hover {
+    filter: brightness(0.5);
 }
 
 /*
@@ -29,77 +48,173 @@ body {
 
  */
 
-.card-content {
-    padding: 2em;
+.cardview-content {
     grid-area: content;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: space-evenly;
+    overflow: auto;
+    padding: 2em;
 }
 
-.card-header {
-    font-size: 2em;
+.cardview-content > * {
+    margin-left: 2em;
+    margin-right: 2em;
 }
 
-.card-config-toggle {
-    float: right;
-    width: 1em;
-    filter: invert(1) brightness(0.7);
+.cardview-content [contenteditable=true] {
+    outline: #eee auto 1px;
 }
 
-.card-config-toggle:hover {
-    filter: invert(1) brightness(0.5);
+.cardview-content [contenteditable=true]:focus {
+    outline: #ffaf8c auto 1px;
 }
 
-.card-details {
-    margin: 2em 1em;
+.cardview-empty-space {
+    flex-grow: 1;
 }
 
-.card-content-options {
-    margin: 1em;
+.cardview-empty-message {
+    color: #ccc;
+    display: none;
 }
 
-.answer-option {
+.cardview-config-empty-message {
+    color: #777;
+    display: none;
+}
+
+.cardview-title {
+    margin-top: 1em;
+    display: inline-block;
+    color: #ccc;
+    font-style: italic;
+    font-size: 0.8em;
+    padding: 0.5em;
+}
+
+.cardview-details {
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    padding: 0.5em;
+}
+
+.cardview-image {
+    margin-top: 1em;
+    max-height: 6em;
+    padding: 0 3em 3em 3em;
+}
+
+.cardview-options {
+    display: inline-flex;
+    margin-bottom: 1em;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.cardview-options-list {
+    margin: 0;
+    padding: 0;
+}
+
+.cardview-option, .cardview-options-new {
     border: 1px solid #ccc;
-    display: block;
-    margin: 0.3em 0;
-    padding: 1em;
+    margin: 0 0 0.3em 0;
+    padding: 0.5em 2em;
 }
 
-.answer-option:hover {
+.cardview-option {
+    display: flex;
+    align-items: center;
+}
+
+.cardview-options-new {
+    display: none;
+    background: none;
+    font-size: 0.8em;
+    color: #777;
+}
+
+.cardview-option:hover, .cardview-options-new:hover {
     border-color: #9dcfff;
 }
 
-.answer-number {
-    margin: 0 1em;
+.cardview-option-correctness {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-right: 1em;
 }
 
-.answer-option.selected {
+.cardview-option-correctness img {
+    width: 1em;
+}
+
+.cardview-option-number {
+    margin: 0 1em 0 0;
+}
+
+.cardview-option-content {
+    padding: 0.3em;
+    display: inline-block;
+    flex-grow: 1;
+}
+
+.cardview-option-delete {
+    border: none;
+    background: none;
+    float: right;
+    padding-left: 1em;
+    display: none;
+}
+
+.cardview-option-delete img {
+    width: 1em;
+}
+
+
+.cardview-selected {
     border-color: dodgerblue;
     background-color: #d3e5f7;
 }
 
-.answer-option.correct {
-    border-color: forestgreen;
-    background-color: #e1f7e1;
-}
-
-.answer-option.incorrect {
+.cardview-incorrect {
     border-color: darkred;
     background-color: #fed9d9;
 }
 
-.show-answer {
+.cardview-correct {
+    border-color: forestgreen;
+    background-color: #e1f7e1;
+}
+
+.cardview-show-answer {
     font-size: 1em;
-    margin: 1em 3em;
     padding: 0.5em 1em;
+    margin-bottom: 1em;
 }
 
-.hide-answer {
-    margin-right: 1em;
+.cardview-hide-answer {
+    margin-right: 0.5em;
+    margin-bottom: 0.5em;
 }
 
-.card-answer {
+.cardview-answer {
+    display: none;
     background-color: #eee;
     border: 1px solid #aaa;
     padding: 1em;
+    margin-bottom: 1em;
+}
+
+.cardview-answer-text {
+    display: block;
+    padding: 0.5em;
+}
+
+.cardview-answer-text[contenteditable=true]  {
+    outline-color: #ddd;
 }
 
 /*
@@ -108,88 +223,152 @@ body {
 
  */
 
-.card-config {
+.cardview-config {
+    grid-area: config;
     padding: 1em;
     background-color: #ddd;
-    grid-area: config;
-    border-left: 1px solid;
+    border-left: 1px solid #444;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
 }
 
-.card-config-title {
+.cardview-config-title {
     margin-bottom: 0.3em;
     color: #444;
 }
 
-.card-difficulty {
+.cardview-completion {
     margin-bottom: 1.5em;
 }
 
-.card-difficulty li {
-    display: inline-block;
+.cardview-completion button {
+    background: none;
+    border: none;
+    padding: 0;
 }
 
-.card-difficulty img {
+.cardview-completion img {
     width: 1em;
 }
 
-.card-label {
+.cardview-difficulty {
+    margin-bottom: 1.5em;
+}
+
+.cardview-difficulty li {
+    display: inline-block;
+}
+
+.cardview-difficulty button {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.cardview-difficulty img {
+    width: 1em;
+}
+
+.cardview-labels {
+    display: inline-flex;
+    align-items: stretch;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.cardview-labels-list {
+    width: 12em;
+}
+
+.cardview-label {
     margin-top: 0.6em;
     padding: 0.3em;
     border-radius: 0.2em;
 }
 
-.card-label p {
-    display: inline;
-    margin-right: 0.5em;
+.cardview-label-row1 {
+    display: flex;
+    align-items: center;
 }
 
-.card-label img {
-    width: 0.8em;
-    margin: 0 0.1em;
+.cardview-label-row2 {
+    margin-top: 0.3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cardview-label > * > * {
+    display: inline-block;
+}
+
+.cardview-label input[type=color] {
+    width: 3em;
+    height: 1em;
+    background-color: #ccc;
+    padding: 0.1em;
+}
+
+.cardview-label input[type=text] {
+    background: none;
+    color: inherit;
+    border: none;
+    text-overflow: ellipsis;
+    width: 0;
+    flex-grow: 1;
+}
+
+.cardview-label-buttons {
     float: right;
+    display: inline-flex;
+    flex-wrap: nowrap;
+    padding-left: 0.3em;
+}
+
+.cardview-label-buttons button {
+    border: none;
+    background: none;
+    padding: 0;
+}
+
+.cardview-label-buttons img {
+    width: 0.8em;
     padding: 0.1em;
     border-radius: 0.2em;
 }
 
-.card-label img:hover {
-    background-color: #f77;
-}
-
-.card-labels-add {
+.cardview-labels-add, .cardview-labels-new {
+    display: block;
     text-align: center;
     margin-top: 0.6em;
     padding: 0.3em;
     border-radius: 0.2em;
+    border: none;
+    color: #777;
 }
 
-.card-labels-add:hover {
+.cardview-labels-add:hover, .cardview-labels-new:hover {
     background-color: #ccc;
 }
 
-.card-labels-add img {
+.cardview-labels-add img, .cardview-labels-new img {
     width: 0.8em;
     margin: 0.1em;
     filter: brightness(0.5);
 }
 
-.grey {
-    color: white;
-    background-color: #ccc;
-}
-
-.red {
-    color: white;
-    background-color: red;
-}
-
-.blue {
-    color: white;
-    background-color: dodgerblue;
-}
-
-.purple {
-    color: white;
-    background-color: mediumpurple;
+.cardview-labels-add-list {
+    background-color: #fff;
+    border: 0.1em solid #aaa;
+    padding: 0.1em;
+    flex-grow: 1;
+    height: 0;
+    overflow: auto;
+    min-height: 7em;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }
 
 /*
@@ -198,29 +377,42 @@ body {
 
  */
 
-.nav {
-    grid-area: nav;
+.cardview-footer {
+    grid-area: footer;
+    text-align: center;
+    border-top: 1px solid #444;
+    padding: 0.5em;
 }
 
-.nav-home, .nav-page {
+.cardview-footer > * {
     display: inline-flex;
     align-items: center;
-    margin: 1em;
-    padding: 1em;
-
+    margin: 0.25em;
 }
 
-.card-viewer-nav img {
+.cardview-footer button {
+    border: none;
+    background: none;
+    padding: 1em;
+}
+
+.cardview-footer img {
     width: 2em;
-    filter: invert(1) brightness(0.7);
     display: inline-block;
 }
 
-.card-viewer-nav img:hover {
-    filter: invert(1) brightness(0.5);
+.cardview-nav-number {
+    display: inline-flex;
+    margin: 0 0.5em;
+    align-items: baseline;
+    align-content: center;
 }
 
-.nav-page-number {
-    display: inline;
-    margin: 0 0.5em;
+.cardview-nav-number > * {
+    padding: 0.2em;
+}
+
+.cardview-current-page:empty:before {
+    content: "#";
+    color: gray;
 }

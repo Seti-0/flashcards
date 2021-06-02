@@ -1,0 +1,43 @@
+/*
+
+    COMMON
+
+ */
+
+body {
+    font-family: "Trebuchet MS";
+}
+
+.icon-correct {
+    filter: hue-rotate(120deg);
+}
+
+.icon-untried {
+    filter: hue-rotate(240deg);
+}
+
+/*
+
+    TESTING
+
+ */
+
+.grey {
+    color: white;
+    background-color: #aaa;
+}
+
+.red {
+    color: white;
+    background-color: red;
+}
+
+.blue {
+    color: white;
+    background-color: dodgerblue;
+}
+
+.purple {
+    color: white;
+    background-color: mediumpurple;
+}

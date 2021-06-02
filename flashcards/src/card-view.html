@@ -1,0 +1,63 @@
+<script src="scripts/card-view.ts" defer></script>
+<div class="cardview">
+    <article class="cardview-card">
+        <section class="cardview-content">
+            <div class="cardview-empty-space"></div>
+            <p class="cardview-empty-message">No card is being displayed</p>
+            <h1 class="cardview-title" data-placeholder="(Title)"></h1>
+            <p class="cardview-details" data-placeholder="(Content)"></p>
+            <img class="cardview-image" alt="main image" src="data/images/card%2077.png">
+            <section class="cardview-options">
+                <ol class="cardview-options-list"></ol>
+                <button class="cardview-options-new">(New Option)</button>
+                <button class="cardview-show-answer">Show Answer</button>
+            </section>
+            <section class="cardview-answer">
+                <button class="cardview-hide-answer">Hide</button>
+                <p class="cardview-answer-text" data-placeholder="(Answer Content)"></p>
+            </section>
+            <div class="cardview-empty-space"></div>
+        </section>
+        <section class="cardview-config">
+            <p class="cardview-config-empty-message">No card is being displayed</p>
+            <section class="cardview-completion">
+                <h2 class="cardview-config-title">Completion</h2>
+                <button data-value="untried"><img class="icon-untried" alt="untried" src="images/red-dot.svg"></button>
+                <button data-value="incorrect"><img class="icon-incorrect" alt="incorrect" src="images/red-dot-empty.svg"></button>
+                <button data-value="correct"><img class="icon-correct" alt="correct" src="images/red-dot-empty.svg"></button>
+            </section>
+            <section class="cardview-difficulty">
+                <h2 class="cardview-config-title">Difficulty</h2>
+                <ol class="cardview-difficulty-list">
+                    <li><button data-n="1"><img alt="star" src="images/star-filled.svg"></button></li>
+                    <li><button data-n="2"><img alt="star" src="images/star-empty.svg"></button></li>
+                    <li><button data-n="3"><img alt="star" src="images/star-empty.svg"></button></li>
+                    <li><button data-n="4"><img alt="star" src="images/star-empty.svg"></button></li>
+                    <li><button data-n="5"><img alt="star" src="images/star-empty.svg"></button></li>
+                </ol>
+            </section>
+            <section class="cardview-labels">
+                <h2 class="cardview-config-title">Labels</h2>
+                <ol class="cardview-labels-list"></ol>
+                <button class="cardview-labels-add"><img alt="add" src="images/add.svg"></button>
+                <div class="cardview-labels-add-list">
+                    <ol></ol>
+                    <button class="cardview-labels-new">(New Label)</button>
+                </div>
+            </section>
+        </section>
+        <footer class="cardview-footer">
+            <button class="cardview-nav-home"><img alt="home" src="images/home.svg"></button>
+            <button class="cardview-config-toggle"><img alt="options" src="images/gear-option.svg"></button>
+            <div class="cardview-nav-page">
+                <button class="cardview-nav-left"><img alt="left" src="images/left.svg"></button>
+                <p class="cardview-nav-number">
+                    <span class="cardview-current-page" contenteditable="true">1</span>
+                    /<span class="cardview-total-pages">10</span></p>
+                <button class="cardview-nav-right"><img alt="right" src="images/right.svg"></button>
+            </div>
+            <button class="cardview-edit"><img alt="options" src="images/draw.svg"></button>
+            <button class="cardview-delete"><img alt="options" src="images/delete.svg"></button>
+        </footer>
+    </article>
+</div>

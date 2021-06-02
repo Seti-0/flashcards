@@ -5,122 +5,13 @@
     <title>Hello World!</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
     <link rel="stylesheet" href="style/reset.css">
-    <link rel="stylesheet" href="style/index5.css">
-    <script src="scripts/data.js"></script>
+    <link rel="stylesheet" href="style/index.css">
+    <link rel="stylesheet" href="style/home.css">
+    <link rel="stylesheet" href="style/card-view.css">
     <script src="libraries/jquery-3.6.0.min.js"></script>
-    <script src="scripts/index.js" defer></script>
+    <script src="out.js" defer></script>
 </head>
 <body>
-<!--<div class="card-viewer"></div>
-<script>$(".card-viewer").load("includes/card-view.html")</script>!-->
-<header class="home-header">
-    <section class="filter-completion">
-        <h2 class="home-header-title">Completion</h2>
-        <ol>
-            <li>
-                <label>
-                    <img class="filter-incorrect" alt="incorrect" src="images/red-dot.svg">
-                    <input type="checkbox">
-                </label>
-            </li>
-            <li>
-                <label>
-                    <img class="filter-correct" alt="correct" src="images/red-dot.svg">
-                    <input type="checkbox">
-                </label>
-            </li>
-            <li>
-                <label>
-                    <img class="filter-untried" alt="untried" src="images/red-dot.svg">
-                    <input type="checkbox">
-                </label>
-            </li>
-        </ol>
-    </section>
-    <section class="filter-difficulty">
-        <h2 class="home-header-title">Difficulty</h2>
-        <ol>
-            <li><img alt="star" src="images/star-filled-gold.svg"></li>
-            <li><img alt="star" src="images/star-filled-gold.svg"></li>
-            <li><img alt="star" src="images/star-filled.svg"></li>
-            <li><img alt="star" src="images/star-empty.svg"></li>
-            <li><img alt="star" src="images/star-empty.svg"></li>
-        </ol>
-    </section>
-    <section class="filter-labels">
-        <h2 class="home-header-title">Labels</h2>
-        <ul class="filter-label-list">
-            <li class="filter-label red">
-                <p>Quantum</p>
-                <img alt="delete" src="images/delete.svg">
-                <img alt="edit" src="images/draw.svg">
-            </li>
-            <li class="filter-label purple">Programming</li>
-            <li class="filter-label blue">
-                <p>Linear Algebra</p>
-                <img alt="delete" src="images/delete.svg">
-                <img alt="edit" src="images/draw.svg">
-            </li>
-            <li class="filter-label grey">Choice</li>
-            <li class="filter-labels-add"><img alt="add" src="images/add.svg"></li>
-        </ul>
-    </section>
-</header>
-<section class="cards">
-    <section class="card">
-        <img class="card-completion card-incorrect" alt="correct" src="images/red-dot.svg">
-        <p class="card-title">
-            Quantum States #2
-        </p>
-        <ol class="card-difficulty">
-            <li><img alt="star" src="images/star-filled.svg"></li>
-            <li><img alt="star" src="images/star-filled.svg"></li>
-            <li><img alt="star" src="images/star-filled.svg"></li>
-            <li><img alt="star" src="images/star-empty.svg"></li>
-            <li><img alt="star" src="images/star-empty.svg"></li>
-        </ol>
-        <ul class="card-labels">
-            <li class="card-label red">
-                <p>Quantum</p>
-                <img alt="delete" src="images/delete.svg">
-                <img alt="edit" src="images/draw.svg">
-            </li>
-            <li class="card-label purple">Programming</li>
-            <li class="card-label blue">
-                <p>Linear Algebra</p>
-                <img alt="delete" src="images/delete.svg">
-                <img alt="edit" src="images/draw.svg">
-            </li>
-            <li class="card-labels-add"><img alt="add" src="images/add.svg"></li>
-        </ul>
-    </section>
-    <section class="card">
-        <img class="card-completion card-correct" alt="correct" src="images/red-dot.svg">
-        <p class="card-title">
-            Quantum States #3
-        </p>
-        <ol class="card-difficulty">
-            <li><img alt="star" src="images/star-filled.svg"></li>
-            <li><img alt="star" src="images/star-filled.svg"></li>
-            <li><img alt="star" src="images/star-empty.svg"></li>
-            <li><img alt="star" src="images/star-empty.svg"></li>
-            <li><img alt="star" src="images/star-empty.svg"></li>
-        </ol>
-        <ul class="card-labels">
-            <li class="card-label red">
-                <p>Quantum</p>
-                <img alt="delete" src="images/delete.svg">
-                <img alt="edit" src="images/draw.svg">
-            </li>
-            <li class="card-label purple">Programming</li>
-            <li class="card-label blue">
-                <p>Linear Algebra</p>
-                <img alt="delete" src="images/delete.svg">
-                <img alt="edit" src="images/draw.svg">
-            </li>
-            <li class="card-labels-add"><img alt="add" src="images/add.svg"></li>
-        </ul>
-    </section>
-</section>
+<div class="included-content"></div>
 </body>
 </html>
