@@ -1,18 +1,32 @@
 import * as cardview from "./card-view"
 
-export function hideIfEmpty($element) {
+export {
+    hideIfEmpty,
+    mapColor,
+    cleanContent,
+    moveCursorToEnd
+}
 
-    if ($element.text() === "" && !cardview.cardview_isEditing())
+function hideIfEmpty($element:any) {
+
+    if ($element.text() === "" && !cardview.isEditing())
         $element.hide()
     else
         $element.show()
 
 }
 
-export function mapColor(cssRgbString, f) {
+function mapColor(cssRgbString:string,
+                         f:(r:number, g:number, b:number)
+                             => [number, number, number]) {
 
     const pattern = /rgb\((\d+),\s*(\d+),\s*(\d+)\)/
     const result = cssRgbString.match(pattern)
+
+    if (!result) {
+        console.log("Failed to match: " + result)
+        return cssRgbString
+    }
 
     const r = parseInt(result[1])
     const g = parseInt(result[2])
@@ -28,12 +42,12 @@ export function mapColor(cssRgbString, f) {
 
 }
 
-export function moveCursorToEnd() {
-    document.execCommand('selectAll', false, null);
-    document.getSelection().collapseToEnd();
+function moveCursorToEnd() {
+    document.execCommand('selectAll', false);
+    document.getSelection()?.collapseToEnd();
 }
 
-export function cleanContent(html) {
+function cleanContent(html:string) {
     return html
         .replace("<div><br></div>>", "<br>")
         .replaceAll("<div>", "<br>").replaceAll("</div>", "")

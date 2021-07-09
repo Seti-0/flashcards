@@ -1,20 +1,20 @@
 
 export {
-    keyboard_init,
-    keyboard_addShortcut
+    init,
+    addShortcut
 }
 
-const keyboard_modifiers = [
+const modifiers = [
     "Shift", "Control", "Alt", "AltGraph"
 ]
 
-const keyboard_shortcuts = []
-const keyboard_keyMap = new Map()
+const shortcuts:any[] = []
+const keyMap = new Map()
 
-function keyboard_init() {
-    document.addEventListener("keydown", keyboard_handleEvent)
+function init() {
+    document.addEventListener("keydown", handleEvent)
 
-    keyboard_addShortcut({
+    addShortcut({
         "key": "h",
         "modifiers": ["Shift", "Control"],
         "action": function(){
@@ -25,7 +25,7 @@ function keyboard_init() {
     })
 }
 
-function keyboard_addShortcut(shortcut) {
+function addShortcut(shortcut:any) {
 
     if (!shortcut.key) {
         console.log("Attempted to register shortcut without a key")
@@ -40,21 +40,21 @@ function keyboard_addShortcut(shortcut) {
     }
 
     let id = 1
-    for (let item of keyboard_shortcuts)
+    for (let item of shortcuts)
         if (item.id >= id)
             id = item.id + 1
     shortcut.id = id
 
-    keyboard_shortcuts.push(shortcut)
+    shortcuts.push(shortcut)
 
     if (!(shortcut.key instanceof Array))
         shortcut.key = [shortcut.key]
 
     for (let key of shortcut.key) {
         key = key.toLowerCase()
-        if (!keyboard_keyMap.has(key))
-            keyboard_keyMap.set(key, [])
-        keyboard_keyMap.get(key).push(shortcut)
+        if (!keyMap.has(key))
+            keyMap.set(key, [])
+        keyMap.get(key).push(shortcut)
     }
 
     shortcut.modifiers ||= []
@@ -62,11 +62,11 @@ function keyboard_addShortcut(shortcut) {
         shortcut.modifiers = [shortcut.modifiers]
 
     shortcut.modifiers = shortcut.modifiers
-        .map(keyboard_checkModifierText)
+        .map(checkModifierText)
 
 }
 
-function keyboard_checkModifierText(text) {
+function checkModifierText(text:string) {
 
     text = text.toLowerCase()
 
@@ -78,9 +78,9 @@ function keyboard_checkModifierText(text) {
 
 }
 
-function keyboard_handleEvent(event) {
+function handleEvent(event:any) {
 
-    const shortcuts = keyboard_keyMap.get(event.key.toLowerCase())
+    const shortcuts = keyMap.get(event.key.toLowerCase())
     if (!shortcuts)
         return
 
@@ -92,7 +92,7 @@ function keyboard_handleEvent(event) {
                 continue
         }
 
-        const modifiersMatch = keyboard_modifiers.every(function(mod) {
+        const modifiersMatch = modifiers.every(function(mod) {
             const requirement = shortcut.modifiers.includes(mod)
             const current = event.getModifierState(mod)
             return requirement === current

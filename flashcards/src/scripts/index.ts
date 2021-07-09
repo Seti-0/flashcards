@@ -7,14 +7,14 @@ $(function(){
 
     console.log("Starting... " + new Date().toLocaleTimeString());
 
-    cards.cards_init()
-    keyboard.keyboard_init()
+    cards.init()
+    keyboard.init()
     undoRedo.undoRedo_init()
 
     $(".included-content").load("card-view.html", function() {
-        cardview.cardview_Init()
-        cardview.cardview_setCardIDs([...cards.cards_getIDs()])
-        cardview.cardview_setPage(150)
+        cardview.init()
+        cardview.setCardIDs([...cards.getIDs()])
+        cardview.setPage(150)
     })
 
 })

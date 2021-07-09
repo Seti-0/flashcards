@@ -8,7 +8,8 @@ const sourceLabels = [
     {
         "id": 1,
         "name": "Control of Vehicle",
-        "color": "#52A5FF"
+        "color": "#52A5FF",
+        "textColor": undefined
     },
     {
         "id": 2,

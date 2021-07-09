@@ -5,12 +5,13 @@ import {sourceCards} from "./data";
 
 export {
     undoRedo_init,
-    undoRedo_editProperty,
-    undoRedo_pushListItem,
-    undoRedo_deleteListItem,
-    undoRedo_deleteCard,
-    undoRedo_createNewLabel,
-    undoRedo_deleteLabel
+    editProperty,
+    pushListItem,
+    deleteListItem,
+    deleteCard,
+    createNewLabel,
+    deleteLabel,
+    edit
 }
 
 /*
@@ -34,21 +35,21 @@ const undoRedo_exampleAction = {
 
 function undoRedo_init() {
 
-    keyboard.keyboard_addShortcut({
+    keyboard.addShortcut({
         "key": "z",
         "modifiers": "ctrl",
         "action": undoRedo_undo,
         "allowWhileEditingInput": true
     })
 
-    keyboard.keyboard_addShortcut({
+    keyboard.addShortcut({
         "key": "y",
         "modifiers": "ctrl",
         "action": undoRedo_redo,
         "allowWhileEditingInput": true
     })
 
-    keyboard.keyboard_addShortcut({
+    keyboard.addShortcut({
         "key": "z",
         "modifiers": ["ctrl", "shift"],
         "action": undoRedo_redo,
@@ -108,8 +109,43 @@ function undoRedo_redo() {
 
  */
 
-function undoRedo_editProperty(target:any, propertyName:string|number,
-                               newValue:any, callback:Function, combine=false) {
+function edit<T>(getter:()=>T, setter:(value:T)=>void,
+              value:T, callback:undefined|(()=>void),
+                 key:any) {
+
+    const oldValue = getter()
+
+    const action:any = {
+        "do": function() {
+            setter(value)
+            if (callback) callback()
+        },
+        "undo": function() {
+            setter(oldValue)
+            if (callback) callback()
+        }
+    }
+
+    if (key) {
+        action["continueGroup"] = "undoRedo_edit"
+        action["value"] = value
+        action["key"] = key
+        action["callback"] = callback
+        action["tryContinue"] = function(next:any) {
+            if (key !== next.key)
+                return false
+            value = next.value
+            callback = next.callback
+            return true
+        }
+    }
+
+    undoRedo_do(action)
+
+}
+
+function editProperty(target:any, propertyName:string|number,
+                      newValue:any, callback:Function, combine=false) {
 
     const oldValue = target[propertyName]
 
@@ -141,7 +177,7 @@ function undoRedo_editProperty(target:any, propertyName:string|number,
 
 }
 
-function undoRedo_deleteListItem(target:any, index:number, callback:Function) {
+function deleteListItem(target:any, index:number, callback:Function) {
 
     const value = target[index]
 
@@ -158,7 +194,7 @@ function undoRedo_deleteListItem(target:any, index:number, callback:Function) {
 
 }
 
-function undoRedo_pushListItem(target:any, value:any, callback:Function) {
+function pushListItem(target:any, value:any, callback:Function) {
 
     undoRedo_do({
         "do": function() {
@@ -173,53 +209,53 @@ function undoRedo_pushListItem(target:any, value:any, callback:Function) {
 
 }
 
-function undoRedo_deleteCard(cardID:number) {
+function deleteCard(cardID:number) {
 
-    const page = cardview.cardview_pageOf(cardID)
-    const card = cards.cards_get(cardID)
+    const page = cardview.pageOf(cardID)
+    const card = cards.get(cardID)
 
     undoRedo_do({
         "do": () => {
-            if (page !== -1) cardview.cardview_removeCard(page)
-            cards.cards_delete(cardID)
+            if (page !== -1) cardview.removeCard(page)
+            cards.remove(cardID)
         },
         "undo": () => {
-            cards.cards_add(card)
-            if (page !== -1) cardview.cardview_addCardID(cardID)
+            cards.add(card)
+            if (page !== -1) cardview.addCardID(cardID)
         }
     })
 
 }
 
-function undoRedo_createNewLabel(callback:Function) {
+function createNewLabel(callback:Function) {
 
     let label:any
 
     undoRedo_do({
         "do": function() {
-            label = cards.cards_createNewLabel()
+            label = cards.createNewLabel()
             if (callback) callback()
         },
         "undo": function() {
-            cards.cards_deleteLabel(label)
+            cards.removeLabel(label)
             if (callback) callback()
         }
     })
 
 }
 
-function undoRedo_deleteLabel(labelID:number, callback:Function) {
+function deleteLabel(labelID:number, callback:Function) {
 
     const labelledCards = sourceCards.filter(x => x.labels.includes(labelID))
-    const label = cards.cards_getLabel(labelID)
+    const label = cards.getLabel(labelID)
 
     undoRedo_do({
         "do": function() {
-            cards.cards_deleteLabel(label)
+            cards.removeLabel(label)
             if (callback) callback()
         },
         "undo": function() {
-            cards.cards_addLabel(label)
+            cards.addLabel(label)
             labelledCards.forEach(x => x.labels.push(labelID))
             if (callback) callback()
         }

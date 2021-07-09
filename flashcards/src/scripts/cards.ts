@@ -1,56 +1,112 @@
 import {sourceCards, sourceLabels} from "./data";
 import * as cardview from "./card-view"
 
-const cards_map = new Map()
-const labels_map = new Map()
+class Label {
 
-let cards_nextID = 1
-let cards_nextLabelID = 1
+    id; name; color; textColor;
 
-export {
-    cards_init,
-    cards_get,
-    cards_getIDs,
-    cards_exists,
-    cards_add,
-    cards_delete,
-    cards_getLabel,
-    cards_getLabels,
-    cards_createNewLabel,
-    cards_addLabel,
-    cards_deleteLabel
+    constructor(id:number,
+                name:string|undefined,
+                color:string|undefined,
+                textColor:string|undefined) {
+
+        this.id = id; this.name = name
+        this.color = color; this.textColor = textColor
+
+    }
+
 }
 
-function cards_init() {
+class Card {
+
+    id; content; labels; options; correct;
+    completion; difficulty; answerContent;
+
+    constructor(id:number,
+                content:string|undefined,
+                labels:number[],
+                options:string[],
+                correct:number|undefined,
+                completion:string|undefined,
+                difficulty:number|undefined,
+                answerContent:string|undefined) {
+
+        this.id = id; this.content = content; this.labels = labels;
+        this.options = options; this.correct = correct;
+        this.completion = completion; this.difficulty = difficulty;
+        this.answerContent = answerContent
+
+    }
+
+}
+
+const cards_map = new Map<number, Card>()
+const labels_map = new Map<number, Label>()
+
+let nextCardID = 1
+let nextLabelID = 1
+
+export {
+    Card,
+    Label,
+    init,
+    get,
+    getIDs,
+    exists,
+    add,
+    remove,
+    getLabel,
+    getLabels,
+    createNewLabel,
+    addLabel,
+    removeLabel
+}
+
+function init() {
 
     cards_map.clear()
     for (let card of sourceCards)
-        cards_map.set(card.id, card)
-    cards_nextID = sourceCards.length + 1
+        cards_map.set(card.id, new Card(
+            card.id,
+            card.content,
+            card.labels,
+            card.options,
+            card.correct,
+            card.completion,
+            card.difficulty,
+            card.answerContent
+            )
+        )
+    nextCardID = sourceCards.length + 1
 
     labels_map.clear()
     for (let label of sourceLabels)
-        labels_map.set(label.id, label)
-    cards_nextLabelID = sourceLabels.length + 1
+        labels_map.set(label.id, new Label(
+            label.id,
+            label.name,
+            label.color,
+            label.textColor
+        ))
+    nextLabelID = sourceLabels.length + 1
 
 }
 
-function cards_createNew() {
+function createNew() {
 
-    const newCard = { "id": cards_nextID }
-    cards_nextID++
+    const newCard = { "id": nextCardID }
+    nextCardID++
 
-    cards_add(newCard)
+    add(newCard)
     return newCard
 
 }
 
-function cards_add(card: any) {
+function add(card: any) {
     cards_map.set(card.id, card)
-    cardview.cardview_onCardsChanged()
+    cardview.onCardsChanged()
 }
 
-function cards_get(cardID: number) {
+function get(cardID: number) {
     return cards_map.get(cardID)
 }
 
@@ -58,42 +114,42 @@ function cards_getAll() {
     return cards_map.values()
 }
 
-function cards_exists(cardID: number) {
+function exists(cardID: number) {
     return cards_map.has(cardID)
 }
 
-function cards_delete(cardID: number) {
+function remove(cardID: number) {
     cards_map.delete(cardID)
-    cardview.cardview_onCardsChanged()
+    cardview.onCardsChanged()
 }
 
-function cards_getIDs() {
+function getIDs() {
     return cards_map.keys()
 }
 
-function cards_createNewLabel() {
+function createNewLabel() {
 
-    const newLabel = { "id": cards_nextLabelID }
-    cards_nextLabelID++
+    const newLabel = { "id": nextLabelID }
+    nextLabelID++
 
-    cards_addLabel(newLabel)
+    addLabel(newLabel)
     return newLabel
 
 }
 
-function cards_addLabel(label: any) {
+function addLabel(label: any) {
     labels_map.set(label.id, label)
 }
 
-function cards_getLabel(labelID: number) {
+function getLabel(labelID: number) {
     return labels_map.get(labelID)
 }
 
-function cards_getLabels() {
+function getLabels() {
     return [...labels_map.values()]
 }
 
-function cards_deleteLabel(label: any) {
+function removeLabel(label: any) {
     [...cards_getAll()].forEach((item) => {
         const labels = item.labels
         const index = labels.indexOf(label.id)

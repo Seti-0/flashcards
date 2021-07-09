@@ -1,7 +1,7 @@
 (() => {
   // src/scripts/utility.ts
   function hideIfEmpty($element) {
-    if ($element.text() === "" && !cardview_isEditing())
+    if ($element.text() === "" && !isEditing())
       $element.hide();
     else
       $element.show();
@@ -9,6 +9,10 @@
   function mapColor(cssRgbString, f) {
     const pattern = /rgb\((\d+),\s*(\d+),\s*(\d+)\)/;
     const result = cssRgbString.match(pattern);
+    if (!result) {
+      console.log("Failed to match: " + result);
+      return cssRgbString;
+    }
     const r = parseInt(result[1]);
     const g = parseInt(result[2]);
     const b = parseInt(result[3]);
@@ -19,8 +23,9 @@
     return `rgb(${r2}, ${g2}, ${b2})`;
   }
   function moveCursorToEnd() {
-    document.execCommand("selectAll", false, null);
-    document.getSelection().collapseToEnd();
+    var _a;
+    document.execCommand("selectAll", false);
+    (_a = document.getSelection()) == null ? void 0 : _a.collapseToEnd();
   }
   function cleanContent(html) {
     return html.replace("<div><br></div>>", "<br>").replaceAll("<div>", "<br>").replaceAll("</div>", "");
@@ -10852,7 +10857,7 @@
   var labels_map = new Map();
   var cards_nextID = 1;
   var cards_nextLabelID = 1;
-  function cards_init() {
+  function init() {
     cards_map.clear();
     for (let card of sourceCards)
       cards_map.set(card.id, card);
@@ -10862,42 +10867,42 @@
       labels_map.set(label.id, label);
     cards_nextLabelID = sourceLabels.length + 1;
   }
-  function cards_add(card) {
+  function add(card) {
     cards_map.set(card.id, card);
-    cardview_onCardsChanged();
+    onCardsChanged();
   }
-  function cards_get(cardID) {
+  function get(cardID) {
     return cards_map.get(cardID);
   }
   function cards_getAll() {
     return cards_map.values();
   }
-  function cards_exists(cardID) {
+  function exists(cardID) {
     return cards_map.has(cardID);
   }
-  function cards_delete(cardID) {
+  function remove(cardID) {
     cards_map.delete(cardID);
-    cardview_onCardsChanged();
+    onCardsChanged();
   }
-  function cards_getIDs() {
+  function getIDs() {
     return cards_map.keys();
   }
-  function cards_createNewLabel() {
+  function createNewLabel() {
     const newLabel = { "id": cards_nextLabelID };
     cards_nextLabelID++;
-    cards_addLabel(newLabel);
+    addLabel(newLabel);
     return newLabel;
   }
-  function cards_addLabel(label) {
+  function addLabel(label) {
     labels_map.set(label.id, label);
   }
-  function cards_getLabel(labelID) {
+  function getLabel(labelID) {
     return labels_map.get(labelID);
   }
-  function cards_getLabels() {
+  function getLabels() {
     return [...labels_map.values()];
   }
-  function cards_deleteLabel(label) {
+  function removeLabel(label) {
     [...cards_getAll()].forEach((item) => {
       const labels = item.labels;
       const index = labels.indexOf(label.id);
@@ -10908,17 +10913,17 @@
   }
 
   // src/scripts/keyboard.ts
-  var keyboard_modifiers = [
+  var modifiers = [
     "Shift",
     "Control",
     "Alt",
     "AltGraph"
   ];
-  var keyboard_shortcuts = [];
-  var keyboard_keyMap = new Map();
-  function keyboard_init() {
-    document.addEventListener("keydown", keyboard_handleEvent);
-    keyboard_addShortcut({
+  var shortcuts = [];
+  var keyMap = new Map();
+  function init2() {
+    document.addEventListener("keydown", handleEvent);
+    addShortcut({
       "key": "h",
       "modifiers": ["Shift", "Control"],
       "action": function() {
@@ -10927,7 +10932,7 @@
       "allowWhileEditingInput": false
     });
   }
-  function keyboard_addShortcut(shortcut) {
+  function addShortcut(shortcut) {
     if (!shortcut.key) {
       console.log("Attempted to register shortcut without a key");
       console.log(shortcut);
@@ -10939,25 +10944,25 @@
       return;
     }
     let id = 1;
-    for (let item of keyboard_shortcuts)
+    for (let item of shortcuts)
       if (item.id >= id)
         id = item.id + 1;
     shortcut.id = id;
-    keyboard_shortcuts.push(shortcut);
+    shortcuts.push(shortcut);
     if (!(shortcut.key instanceof Array))
       shortcut.key = [shortcut.key];
     for (let key of shortcut.key) {
       key = key.toLowerCase();
-      if (!keyboard_keyMap.has(key))
-        keyboard_keyMap.set(key, []);
-      keyboard_keyMap.get(key).push(shortcut);
+      if (!keyMap.has(key))
+        keyMap.set(key, []);
+      keyMap.get(key).push(shortcut);
     }
     shortcut.modifiers || (shortcut.modifiers = []);
     if (!(shortcut.modifiers instanceof Array))
       shortcut.modifiers = [shortcut.modifiers];
-    shortcut.modifiers = shortcut.modifiers.map(keyboard_checkModifierText);
+    shortcut.modifiers = shortcut.modifiers.map(checkModifierText);
   }
-  function keyboard_checkModifierText(text) {
+  function checkModifierText(text) {
     text = text.toLowerCase();
     if (text === "alt")
       return "Alt";
@@ -10970,17 +10975,17 @@
     else if (text === "shift")
       return "Shift";
   }
-  function keyboard_handleEvent(event) {
-    const shortcuts = keyboard_keyMap.get(event.key.toLowerCase());
-    if (!shortcuts)
+  function handleEvent(event) {
+    const shortcuts2 = keyMap.get(event.key.toLowerCase());
+    if (!shortcuts2)
       return;
-    for (let shortcut of shortcuts) {
+    for (let shortcut of shortcuts2) {
       if (shortcut.modifiers.length === 0 && !shortcut.allowWhileEditingInput) {
         const $focus = $(":focus");
         if ($focus.is("input") || $focus.attr("contenteditable"))
           continue;
       }
-      const modifiersMatch = keyboard_modifiers.every(function(mod) {
+      const modifiersMatch = modifiers.every(function(mod) {
         const requirement = shortcut.modifiers.includes(mod);
         const current = event.getModifierState(mod);
         return requirement === current;
@@ -10998,19 +11003,19 @@
   var undoRedo_past = [];
   var undoRedo_future = [];
   function undoRedo_init() {
-    keyboard_addShortcut({
+    addShortcut({
       "key": "z",
       "modifiers": "ctrl",
       "action": undoRedo_undo,
       "allowWhileEditingInput": true
     });
-    keyboard_addShortcut({
+    addShortcut({
       "key": "y",
       "modifiers": "ctrl",
       "action": undoRedo_redo,
       "allowWhileEditingInput": true
     });
-    keyboard_addShortcut({
+    addShortcut({
       "key": "z",
       "modifiers": ["ctrl", "shift"],
       "action": undoRedo_redo,
@@ -11045,7 +11050,7 @@
     action.do();
     undoRedo_past.push(action);
   }
-  function undoRedo_editProperty(target, propertyName, newValue, callback, combine = false) {
+  function editProperty(target, propertyName, newValue, callback, combine = false) {
     const oldValue = target[propertyName];
     undoRedo_do({
       "do": function() {
@@ -11074,7 +11079,7 @@
       }
     });
   }
-  function undoRedo_deleteListItem(target, index, callback) {
+  function deleteListItem(target, index, callback) {
     const value = target[index];
     undoRedo_do({
       "do": function() {
@@ -11089,7 +11094,7 @@
       }
     });
   }
-  function undoRedo_pushListItem(target, value, callback) {
+  function pushListItem(target, value, callback) {
     undoRedo_do({
       "do": function() {
         target.push(value);
@@ -11103,48 +11108,48 @@
       }
     });
   }
-  function undoRedo_deleteCard(cardID) {
-    const page = cardview_pageOf(cardID);
-    const card = cards_get(cardID);
+  function deleteCard(cardID) {
+    const page = pageOf(cardID);
+    const card = get(cardID);
     undoRedo_do({
       "do": () => {
         if (page !== -1)
-          cardview_removeCard(page);
-        cards_delete(cardID);
+          removeCard(page);
+        remove(cardID);
       },
       "undo": () => {
-        cards_add(card);
+        add(card);
         if (page !== -1)
-          cardview_addCardID(cardID);
+          addCardID(cardID);
       }
     });
   }
-  function undoRedo_createNewLabel(callback) {
+  function createNewLabel2(callback) {
     let label;
     undoRedo_do({
       "do": function() {
-        label = cards_createNewLabel();
+        label = createNewLabel();
         if (callback)
           callback();
       },
       "undo": function() {
-        cards_deleteLabel(label);
+        removeLabel(label);
         if (callback)
           callback();
       }
     });
   }
-  function undoRedo_deleteLabel(labelID, callback) {
+  function deleteLabel(labelID, callback) {
     const labelledCards = sourceCards.filter((x) => x.labels.includes(labelID));
-    const label = cards_getLabel(labelID);
+    const label = getLabel(labelID);
     undoRedo_do({
       "do": function() {
-        cards_deleteLabel(label);
+        removeLabel(label);
         if (callback)
           callback();
       },
       "undo": function() {
-        cards_addLabel(label);
+        addLabel(label);
         labelledCards.forEach((x) => x.labels.push(labelID));
         if (callback)
           callback();
@@ -11152,278 +11157,53 @@
     });
   }
 
-  // src/scripts/card-view.ts
-  var cardview_index = [];
-  var cardview_page = 1;
-  var cardview_editing = false;
-  function cardview_onCardsChanged() {
-    cardview_setCardIDs(cardview_index.filter(cards_exists));
+  // src/scripts/cardview/completion.ts
+  function init3() {
+    const $listView = $(".cardview-completion");
+    $listView.on("mouseenter", "img", function() {
+      $(this).attr("src", "images/red-dot-light-interior.svg");
+    });
+    $listView.on("mouseleave", "img", function() {
+      const element = $(this);
+      if (element.parent("button").attr("data-value") === getValue())
+        element.attr("src", "images/red-dot.svg");
+      else
+        element.attr("src", "images/red-dot-empty.svg");
+    });
+    $listView.on("click", "button", function() {
+      const value = $(this).attr("data-value");
+      setValue(value);
+    });
   }
-  function cardview_setCardIDs(index) {
-    cardview_index = index;
-    cardview_onCardIDsChanged();
-  }
-  function cardview_onCardIDsChanged() {
-    $(".cardview-total-pages").text(cardview_index.length);
-    cardview_checkPage();
-    cardview_refreshPage();
-  }
-  function cardview_addCardID(cardID, page = void 0) {
-    page || (page = cardview_page);
-    cardview_index.splice(page - 1, 0, cardID);
-    cardview_onCardIDsChanged();
-  }
-  function cardview_removeCard(page = void 0) {
-    page || (page = cardview_page);
-    cardview_index.splice(page - 1, 1);
-    cardview_onCardIDsChanged();
-  }
-  function cardview_pageOf(cardID) {
-    return cardview_index.indexOf(cardID) + 1;
-  }
-  function cardview_getCurrentCardID() {
-    if (cardview_index.length === 0)
-      return void 0;
-    return cardview_index[cardview_getPage() - 1];
-  }
-  function cardview_getCurrentCard() {
-    const index = cardview_getCurrentCardID();
-    if (!index)
-      return void 0;
-    return cards_get(index);
-  }
-  function cardview_getPageCount() {
-    return cardview_index.length;
-  }
-  function cardview_getPage() {
-    return cardview_page;
-  }
-  function cardview_checkPage() {
-    cardview_setPage(cardview_page);
-  }
-  function cardview_setPage(newValue) {
-    newValue = Math.max(1, Math.min(newValue, cardview_getPageCount()));
-    if (cardview_getPageCount() === 0)
-      newValue = 0;
-    const $view = $(".cardview-current-page");
-    if (newValue.toString() !== $view.html())
-      $view.html(newValue.toString());
-    if (newValue !== cardview_page) {
-      cardview_page = newValue;
-      cardview_refreshPage();
+  function refresh() {
+    const $view = $(".cardview-completion");
+    if (!getCurrentCard()) {
+      $view.hide();
+      return;
     }
-  }
-  function cardview_Init() {
-    $(".cardview-labels-add-list").hide();
-    $(".cardview-title").on("input", function() {
-      const $input = $(this);
-      const card = cardview_getCurrentCard();
-      const value = cleanContent($input.html());
-      undoRedo_editProperty(card, "title", value, function() {
-        if ($input.html() !== card.title)
-          $input.html(card.title);
-      }, true);
+    $view.show().find("img").each((i, element) => {
+      const $element = $(element);
+      if ($element.parent("button").attr("data-value") === getValue())
+        $element.attr("src", "images/red-dot.svg");
+      else
+        $element.attr("src", "images/red-dot-empty.svg");
     });
-    $(".cardview-details").on("input", function() {
-      const $input = $(this);
-      const card = cardview_getCurrentCard();
-      const value = cleanContent($input.html());
-      undoRedo_editProperty(card, "content", value, function() {
-        if ($input.html() !== card.content)
-          $input.html(card.content);
-      }, true);
-    });
-    $(".cardview-show-answer").on("click", cardviewAnswer_toggle);
-    $(".cardview-hide-answer").on("click", cardviewAnswer_toggle);
-    $(".cardview-answer-text").on("input", function() {
-      const $input = $(this);
-      const card = cardview_getCurrentCard();
-      const value = cleanContent($input.html());
-      undoRedo_editProperty(card, "answerContent", value, function() {
-        if ($input.html() !== card.answerContent)
-          $input.html(card.answerContent);
-      }, true);
-    });
-    $(".cardview-nav-left").on("click", cardview_previousPage);
-    $(".cardview-nav-right").on("click", cardview_nextPage);
-    $(".cardview-current-page").on("input", function() {
-      const userInput = $(this).html();
-      const userPage = parseInt(userInput) || 1;
-      let page = Math.max(1, Math.min(userPage, cardview_getPageCount()));
-      cardview_setPage(page);
-      if (page.toString() !== userInput)
-        moveCursorToEnd();
-      cardview_refreshPage();
-    });
-    $(".cardview-config-toggle").on("click", cardview_toggleConfig);
-    $(".cardview-delete").on("click", function() {
-      const cardID = cardview_getCurrentCardID();
-      if (cardID)
-        undoRedo_deleteCard(cardID);
-    });
-    $(".cardview-edit").on("click", cardview_toggleEditing);
-    cardviewOptions_init();
-    cardviewCompletion_init();
-    cardviewDifficulty_init();
-    cardviewLabels_init();
-    cardview_initShortcuts();
-    cardview_setCardIDs([]);
   }
-  function cardview_initShortcuts() {
-    function register(key, action) {
-      keyboard_addShortcut({
-        "key": key,
-        "action": action
-      });
-    }
-    register(["ArrowLeft", "a"], cardview_previousPage);
-    register(["ArrowRight", "d"], cardview_nextPage);
-    register(" ", cardviewAnswer_toggle);
-    register("q", cardview_toggleConfig);
-    register("e", cardview_toggleEditing);
-    for (let i = 1; i < 10; i++)
-      register(i.toString(), () => {
-        if (cardviewAnswer_isVisible()) {
-          if (i < 6)
-            cardviewDifficulty_setValue(i);
-          else {
-            let value;
-            if (i === 6)
-              value = "untried";
-            else if (i === 7)
-              value = "incorrect";
-            else
-              value = "correct";
-            cardviewCompletion_setValue(value);
-          }
-        } else {
-          cardviewOptions_selectNumber(i);
-          cardviewOptions_showAnswer();
-        }
-      });
+  function setValue(value) {
+    const card = getCurrentCard();
+    editProperty(card, "completion", value, refresh);
   }
-  function cardview_nextPage() {
-    let page = cardview_getPage();
-    page++;
-    if (page > cardview_getPageCount())
-      page = 1;
-    cardviewLabels_hideAddList();
-    if (!cardview_isEditing())
-      cardviewAnswer_hide();
-    cardview_setPage(page);
+  function getValue() {
+    return getCurrentCard().completion || "untried";
   }
-  function cardview_previousPage() {
-    let page = cardview_getPage();
-    page--;
-    if (page < 1)
-      page = cardview_getPageCount();
-    cardviewLabels_hideAddList();
-    if (!cardview_isEditing())
-      cardviewAnswer_hide();
-    cardview_setPage(page);
-  }
-  function cardview_refreshPage() {
-    const $titleView = $(".cardview-title");
-    const $contentView = $(".cardview-details");
-    const $imgView = $(".cardview-image");
-    const $answerView = $(".cardview-answer-text");
-    const $emptyMsgs = $(".cardview-empty-message, .cardview-config-empty-message");
-    const card = cardview_getCurrentCard();
-    if (!card) {
-      $emptyMsgs.show();
-      $titleView.hide();
-      $contentView.hide();
-      $imgView.hide();
-      $answerView.hide();
-    } else {
-      $emptyMsgs.hide();
-      const title = card.title || "";
-      $titleView.html(title);
-      hideIfEmpty($titleView);
-      const content = card.content || "";
-      $contentView.html(content);
-      hideIfEmpty($contentView);
-      const imgName = card.img_name;
-      if (imgName) {
-        const imgSrc = "data/images/" + imgName;
-        $imgView.attr("src", imgSrc);
-        $imgView.show("fast");
-      } else {
-        $imgView.hide("fast");
-      }
-      const answerContent = card.answerContent || "(No content)";
-      $answerView.html(answerContent);
-      hideIfEmpty($answerView);
-    }
-    cardviewOptions_refresh();
-    cardviewCompletion_refresh();
-    cardviewDifficulty_refresh();
-    cardviewLabels_refresh();
-  }
-  function cardview_toggleEditing() {
-    if (cardview_isEditing())
-      cardview_stopEditing();
-    else if (cardview_getCurrentCard())
-      cardview_startEditing();
-  }
-  function cardview_isEditing() {
-    return cardview_editing;
-  }
-  function cardview_startEditing() {
-    cardview_editing = true;
-    $(".cardview-edit").css("background-color", "#eee");
-    $(".cardview-title").prop("contenteditable", true);
-    $(".cardview-details").prop("contenteditable", true);
-    cardviewOptions_startEditing();
-    $(".cardview-show-answer").hide("fast");
-    $(".cardview-hide-answer").hide("fast");
-    $(".cardview-answer").show("fast");
-    $(".cardview-answer-text").prop("contenteditable", true);
-    cardview_refreshPage();
-  }
-  function cardview_stopEditing() {
-    cardview_editing = false;
-    $(".cardview-edit").css("background-color", "#00000000");
-    $(".cardview-title").prop("contenteditable", false);
-    $(".cardview-details").prop("contenteditable", false);
-    cardviewOptions_stopEditing();
-    $(".cardview-show-answer").show("fast");
-    $(".cardview-hide-answer").show("fast");
-    $(".cardview-answer").hide("fast");
-    $(".cardview-answer-text").prop("contenteditable", false);
-    cardview_refreshPage();
-  }
-  function cardview_toggleConfig() {
-    $(".cardview-config").toggle("fast");
-  }
-  var cardviewAnswer_visible = false;
-  function cardviewAnswer_toggle() {
-    if (cardviewAnswer_isVisible())
-      cardviewAnswer_hide();
-    else
-      cardviewAnswer_show();
-  }
-  function cardviewAnswer_isVisible() {
-    return cardviewAnswer_visible;
-  }
-  function cardviewAnswer_show() {
-    cardviewAnswer_visible = true;
-    $(".cardview-show-answer").hide("fast");
-    $(".cardview-answer").show("fast");
-    cardviewOptions_showAnswer();
-  }
-  function cardviewAnswer_hide() {
-    cardviewAnswer_visible = false;
-    cardviewOptions_hideAnswer();
-    $(".cardview-answer").hide("fast");
-    $(".cardview-show-answer").show("fast");
-  }
-  function cardviewOptions_init() {
-    const optionsView = $(".cardview-options");
+
+  // src/scripts/cardview/options.ts
+  function init4() {
+    const optionsView2 = $(".cardview-options");
     const listView = $(".cardview-options-list");
     listView.on("click", ".cardview-option", function() {
-      if (!cardview_isEditing())
-        cardviewOptions_select(this);
+      if (!isEditing())
+        select(this);
     });
     listView.on("mouseenter", ".cardview-option-correctness img", function() {
       $(this).attr("src", "images/red-dot-light.svg");
@@ -11434,45 +11214,45 @@
     listView.on("click", ".cardview-option-correctness", function() {
       const $option = $(this).parent(".cardview-option");
       const index = parseInt($option.attr("data-index"));
-      const card = cardview_getCurrentCard();
-      undoRedo_editProperty(card, "correct", index + 1, cardviewOptions_refresh);
+      const card = getCurrentCard();
+      editProperty(card, "correct", index + 1, refresh2);
     });
     listView.on("input", ".cardview-option-content", function() {
       const $content = $(this);
       const $option = $content.parent(".cardview-option");
       const content = cleanContent($content.html());
       const index = parseInt($option.attr("data-index"));
-      const options = cardview_getCurrentCard().options;
-      options[index] = content;
-      undoRedo_editProperty(options, index, content, cardviewOptions_refresh, true);
+      const options2 = getCurrentCard().options;
+      options2[index] = content;
+      editProperty(options2, index, content, refresh2, true);
     });
     listView.on("click", ".cardview-option-delete", function() {
       const $option = $(this).parent(".cardview-option");
       const index = parseInt($option.attr("data-index"));
-      const card = cardview_getCurrentCard();
-      undoRedo_deleteListItem(card.options, index, cardviewOptions_refresh);
+      const card = getCurrentCard();
+      deleteListItem(card.options, index, refresh2);
     });
-    optionsView.on("click", ".cardview-options-new", function() {
-      const card = cardview_getCurrentCard();
+    optionsView2.on("click", ".cardview-options-new", function() {
+      const card = getCurrentCard();
       const value = "Option #" + (card.options.length + 1);
-      undoRedo_pushListItem(card.options, value, cardviewOptions_refresh);
+      pushListItem(card.options, value, refresh2);
     });
   }
-  function cardviewOptions_refresh(speed = "fast") {
-    const card = cardview_getCurrentCard();
+  function refresh2(speed = "fast") {
+    const card = getCurrentCard();
     if (card)
       $(".cardview-options").show();
     else {
       $(".cardview-options").hide();
       return;
     }
-    const options = card.options || [];
+    const options2 = card.options || [];
     const correct = card.correct || 0;
     const $listView = $(".cardview-options-list");
     const current_n = $listView.children().length;
-    const target_n = options.length;
+    const target_n = options2.length;
     if (current_n < target_n) {
-      for (let i = current_n; i < options.length; i++) {
+      for (let i = current_n; i < options2.length; i++) {
         const $li = $(`
             <li class="cardview-option" data-index="${i}">
                 <button class="cardview-option-correctness">
@@ -11500,8 +11280,8 @@
     $listView.children().each(function(i) {
       const $li = $(this);
       const $content = $li.find(".cardview-option-content");
-      if ($content.html() !== options[i])
-        $content.html(options[i]);
+      if ($content.html() !== options2[i])
+        $content.html(options2[i]);
       const $correctnessImg = $li.find(".cardview-option-correctness");
       if (correct === i + 1) {
         $li.addClass("cardview-correct-secret");
@@ -11512,7 +11292,7 @@
         $correctnessImg.removeClass("icon-correct");
         $correctnessImg.addClass("icon-incorrect");
       }
-      if (cardview_isEditing()) {
+      if (isEditing()) {
         $li.find(".cardview-option-content").attr("contenteditable", "true");
         $li.find(".cardview-option-correctness").show(speed);
         $li.find(".cardview-option-delete").show(speed);
@@ -11524,171 +11304,167 @@
     });
     hideIfEmpty($listView);
   }
-  function cardviewOptions_select(element) {
+  function select(element) {
     $(".cardview-selected").removeClass("cardview-selected");
     $(element).addClass("cardview-selected");
   }
-  function cardviewOptions_selectNumber(number) {
+  function selectNumber(number) {
     var _a;
-    const options = (_a = document.querySelector(".cardview-options-list")) == null ? void 0 : _a.children;
-    if (!options || options.length === 0)
+    const options2 = (_a = document.querySelector(".cardview-options-list")) == null ? void 0 : _a.children;
+    if (!options2 || options2.length === 0)
       return;
-    number = Math.max(1, Math.min(number, options.length));
-    cardviewOptions_select(options[number - 1]);
+    number = Math.max(1, Math.min(number, options2.length));
+    select(options2[number - 1]);
   }
-  function cardviewOptions_showAnswer() {
+  var answerVisible = false;
+  function showAnswer() {
+    answerVisible = true;
     const $correct = $(".cardview-correct-secret");
     const $selected = $(".cardview-selected");
-    const card = cardview_getCurrentCard();
+    const card = getCurrentCard();
     if ($correct.is($selected))
       card.completion = "correct";
     else
       card.completion = "incorrect";
-    cardviewCompletion_refresh();
+    refresh();
     $(".cardview-correct").removeClass("cardview-correct");
     $(".cardview-incorrect").removeClass("cardview-incorrect");
     $correct.addClass("cardview-correct");
     $selected.addClass("cardview-incorrect");
     $selected.removeClass("cardview-selected");
   }
-  function cardviewOptions_hideAnswer() {
+  function hideAnswer() {
+    answerVisible = false;
     $(".cardview-incorrect").removeClass("cardview-incorrect");
     $(".cardview-correct-secret").removeClass("cardview-correct");
   }
-  function cardviewOptions_startEditing() {
-    cardviewOptions_hideAnswer();
+  function isAnswerVisible() {
+    return answerVisible;
+  }
+  function startEditing() {
+    hideAnswer();
     $(".cardview-selected").removeClass("cardview-selected");
     $(".cardview-options-new").show("fast");
-    cardviewOptions_refresh();
+    refresh2();
   }
-  function cardviewOptions_stopEditing() {
+  function stopEditing() {
     $(".cardview-options-new").hide("fast");
-    cardviewOptions_refresh();
+    refresh2();
   }
-  function cardviewCompletion_init() {
-    const $listView = $(".cardview-completion");
-    $listView.on("mouseenter", "img", function() {
-      $(this).attr("src", "images/red-dot-light-interior.svg");
-    });
-    $listView.on("mouseleave", "img", function() {
-      const element = $(this);
-      if (element.parent("button").attr("data-value") === cardviewCompletion_getValue())
-        element.attr("src", "images/red-dot.svg");
-      else
-        element.attr("src", "images/red-dot-empty.svg");
-    });
-    $listView.on("click", "button", function() {
-      const value = $(this).attr("data-value");
-      cardviewCompletion_setValue(value);
-    });
+
+  // src/scripts/cardview/answer.ts
+  var visible = false;
+  function toggle() {
+    if (isVisible())
+      hide();
+    else
+      show();
   }
-  function cardviewCompletion_refresh() {
-    const $view = $(".cardview-completion");
-    if (!cardview_getCurrentCard()) {
-      $view.hide();
-      return;
-    }
-    $view.show().find("img").each((i, element) => {
-      const $element = $(element);
-      if ($element.parent("button").attr("data-value") === cardviewCompletion_getValue())
-        $element.attr("src", "images/red-dot.svg");
-      else
-        $element.attr("src", "images/red-dot-empty.svg");
-    });
+  function isVisible() {
+    return visible;
   }
-  function cardviewCompletion_setValue(value) {
-    const card = cardview_getCurrentCard();
-    undoRedo_editProperty(card, "completion", value, cardviewCompletion_refresh);
+  function show() {
+    visible = true;
+    $(".cardview-show-answer").hide("fast");
+    $(".cardview-answer").show("fast");
+    showAnswer();
   }
-  function cardviewCompletion_getValue() {
-    return cardview_getCurrentCard().completion || "untried";
+  function hide() {
+    visible = false;
+    hideAnswer();
+    $(".cardview-answer").hide("fast");
+    $(".cardview-show-answer").show("fast");
   }
-  function cardviewDifficulty_init() {
+
+  // src/scripts/cardview/difficulty.ts
+  function init5() {
     const $listView = $(".cardview-difficulty-list");
     $listView.on("mouseenter", "img", function() {
       $(this).attr("src", "images/star-filled-light.svg");
     });
     $listView.on("mouseleave", "img", function() {
       const $img = $(this);
-      if ($img.parent("button").attr("data-n") <= cardviewDifficulty_getValue())
+      if ($img.parent("button").attr("data-n") <= getValue2())
         $img.attr("src", "images/star-filled.svg");
       else
         $img.attr("src", "images/star-empty.svg");
     });
     $listView.on("click", "button", function() {
       const value = $(this).attr("data-n");
-      cardviewDifficulty_setValue(value);
+      setValue2(value);
     });
   }
-  function cardviewDifficulty_refresh() {
+  function refresh3() {
     const $view = $(".cardview-difficulty");
-    if (!cardview_getCurrentCard()) {
+    if (!getCurrentCard()) {
       $view.hide();
       return;
     } else
       $view.show();
     $(".cardview-difficulty-list").find("img").each((i, element) => {
       const $element = $(element);
-      if ($element.parent("button").attr("data-n") <= cardviewDifficulty_getValue())
+      if ($element.parent("button").attr("data-n") <= getValue2())
         $element.attr("src", "images/star-filled.svg");
       else
         $element.attr("src", "images/star-empty.svg");
     });
   }
-  function cardviewDifficulty_setValue(number) {
+  function setValue2(number) {
     number = Math.max(1, Math.min(number, 5));
-    const card = cardview_getCurrentCard();
-    undoRedo_editProperty(card, "difficulty", number, cardviewDifficulty_refresh);
+    const card = getCurrentCard();
+    editProperty(card, "difficulty", number, refresh3);
   }
-  function cardviewDifficulty_getValue() {
-    return cardview_getCurrentCard().difficulty || 1;
+  function getValue2() {
+    return getCurrentCard().difficulty || 1;
   }
-  function cardviewLabels_init() {
-    cardviewLabels_refreshAddList();
-    const labelsView = $(".cardview-labels");
-    labelsView.on("input", "input[type=text]", function() {
+
+  // src/scripts/cardview/labels.ts
+  function init6() {
+    refreshAddList();
+    const labelsView2 = $(".cardview-labels");
+    labelsView2.on("input", "input[type=text]", function() {
       const input = $(this);
-      const label = cardviewLabels_getLabel(input.parents("li"));
-      undoRedo_editProperty(label, "name", input.val(), cardviewLabels_updateText, true);
+      const label = getLabel2(input.parents("li"));
+      editProperty(label, "name", input.val(), updateText, true);
     });
-    labelsView.on("input", ".cardview-label-bg", function() {
+    labelsView2.on("input", ".cardview-label-bg", function() {
       const $input = $(this);
-      const target = cardviewLabels_getLabel($input.parents("li"));
-      undoRedo_editProperty(target, "color", $input.val(), cardviewLabels_updateColors);
+      const target = getLabel2($input.parents("li"));
+      editProperty(target, "color", $input.val(), updateColors);
     });
-    labelsView.on("input", ".cardview-label-color", function() {
+    labelsView2.on("input", ".cardview-label-color", function() {
       const $input = $(this);
-      const target = cardviewLabels_getLabel($input.parents("li"));
-      undoRedo_editProperty(target, "textColor", $input.val(), cardviewLabels_updateColors);
+      const target = getLabel2($input.parents("li"));
+      editProperty(target, "textColor", $input.val(), updateColors);
     });
-    labelsView.on("mouseenter", "li", function() {
+    labelsView2.on("mouseenter", "li", function() {
       $(this).find(".cardview-label-buttons").show("fast");
     });
-    labelsView.on("mouseleave", "li", function() {
+    labelsView2.on("mouseleave", "li", function() {
       $(this).find(".cardview-label-buttons").hide("fast");
     });
-    labelsView.on("click", ".cardview-label-remove", function() {
-      const labelID = cardviewLabels_getLabelID($(this).parents("li"));
-      const labels = cardview_getCurrentCard().labels;
+    labelsView2.on("click", ".cardview-label-remove", function() {
+      const labelID = getLabelID($(this).parents("li"));
+      const labels = getCurrentCard().labels;
       const index = labels.indexOf(labelID);
       if (index > -1)
-        undoRedo_deleteListItem(labels, index, cardviewLabels_refresh);
+        deleteListItem(labels, index, refresh4);
     });
-    labelsView.on("click", ".cardview-label-delete", function(e) {
+    labelsView2.on("click", ".cardview-label-delete", function(e) {
       const $li = $(this).parents("li");
-      const label = cardviewLabels_getLabel($li);
-      undoRedo_deleteLabel(label.id, function() {
-        cardviewLabels_refresh();
-        cardviewLabels_refreshAddList();
+      const label = getLabel2($li);
+      deleteLabel(label.id, function() {
+        refresh4();
+        refreshAddList();
       });
       e.stopPropagation();
     });
-    labelsView.on("click", ".cardview-label-edit", function(event) {
+    labelsView2.on("click", ".cardview-label-edit", function(event) {
       const li = $(this).parents("li");
-      cardviewLabels_toggleEditing(li);
+      toggleEditing(li);
       event.stopPropagation();
     });
-    labelsView.on("mouseenter", "img", function() {
+    labelsView2.on("mouseenter", "img", function() {
       const img = $(this);
       const li = img.parents("li");
       const color = li.css("background-color");
@@ -11698,48 +11474,48 @@
       });
       img.css("background-color", lightColor);
     });
-    labelsView.on("mouseleave", "img", function() {
+    labelsView2.on("mouseleave", "img", function() {
       $(this).css("background-color", "#00000000");
     });
-    labelsView.on("focusout", "li", function() {
+    labelsView2.on("focusout", "li", function() {
       if (!this.matches(":focus-within"))
-        cardviewLabels_stopEditing($(this));
+        stopEditing2($(this));
     });
-    labelsView.on("click", ".cardview-labels-add", function() {
-      cardviewLabels_toggleAddList();
+    labelsView2.on("click", ".cardview-labels-add", function() {
+      toggleAddList();
     });
-    labelsView.on("focusout", ".cardview-labels-add-list", function() {
+    labelsView2.on("focusout", ".cardview-labels-add-list", function() {
       if (!this.matches(":focus-within"))
-        cardviewLabels_hideAddList();
+        hideAddList();
     });
-    labelsView.on("click", ".cardview-labels-add-list li", function() {
+    labelsView2.on("click", ".cardview-labels-add-list li", function() {
       const $li = $(this);
-      if (!cardviewLabels_isEditing($li)) {
-        cardviewLabels_hideAddList();
-        const card = cardview_getCurrentCard();
-        const labelID = cardviewLabels_getLabelID($li);
-        undoRedo_pushListItem(card.labels, labelID, cardviewLabels_refresh);
+      if (!isEditing2($li)) {
+        hideAddList();
+        const card = getCurrentCard();
+        const labelID = getLabelID($li);
+        pushListItem(card.labels, labelID, refresh4);
       }
     });
-    labelsView.on("click", ".cardview-labels-new", function() {
-      undoRedo_createNewLabel(function() {
-        cardviewLabels_refreshAddList();
+    labelsView2.on("click", ".cardview-labels-new", function() {
+      createNewLabel2(function() {
+        refreshAddList();
         const $latest = $(".cardview-labels-add-list").find("li:last-child");
-        cardviewLabels_startEditing($latest);
+        startEditing2($latest);
       });
     });
   }
-  function cardviewLabels_updateText() {
+  function updateText() {
     $(".cardview-label").each(function(index, li) {
       const $li = $(li);
-      const label = cardviewLabels_getLabel($li);
+      const label = getLabel2($li);
       $li.find("input[type=text]").val(label.name);
     });
   }
-  function cardviewLabels_updateColors() {
+  function updateColors() {
     $(".cardview-label").each(function(index, li) {
       const $li = $(li);
-      const label = cardviewLabels_getLabel($li);
+      const label = getLabel2($li);
       const color = label.color || "#bab0b0";
       const textColor = label.textColor || "#ffffff";
       $li.css({
@@ -11750,29 +11526,29 @@
       $li.find(".cardview-label-color").val(textColor);
     });
   }
-  function cardviewLabels_toggleEditing(labelLi) {
-    if (!cardviewLabels_isEditing(labelLi))
-      cardviewLabels_startEditing(labelLi);
+  function toggleEditing(labelLi) {
+    if (!isEditing2(labelLi))
+      startEditing2(labelLi);
     else
-      cardviewLabels_stopEditing(labelLi);
+      stopEditing2(labelLi);
   }
-  function cardviewLabels_isEditing(labelLi) {
+  function isEditing2(labelLi) {
     return !labelLi.find(".cardview-label-text").prop("disabled");
   }
-  function cardviewLabels_startEditing(labelLi) {
+  function startEditing2(labelLi) {
     labelLi.find(".cardview-label-colors").show("fast");
     const text = labelLi.find(".cardview-label-text");
     text.prop("disabled", false);
     text.trigger("select");
     labelLi[0].scrollIntoView();
   }
-  function cardviewLabels_stopEditing(labelLi) {
+  function stopEditing2(labelLi) {
     labelLi.find(".cardview-label-colors").hide("fast");
     const text = labelLi.find(".cardview-label-text");
     text.prop("disabled", true);
   }
-  function cardviewLabels_refresh() {
-    const card = cardview_getCurrentCard();
+  function refresh4() {
+    const card = getCurrentCard();
     const $view = $(".cardview-labels");
     if (card)
       $view.show();
@@ -11784,29 +11560,29 @@
     const $listView = $(".cardview-labels-list");
     $listView.html("");
     for (let labelID of cardLabels) {
-      const label = cards_getLabel(labelID);
+      const label = getLabel(labelID);
       if (typeof label === "undefined") {
         console.log("Unable to read card label: " + labelID);
         continue;
       }
-      $listView.append(cardviewLabels_createElement(label, "cardview-label-remove"));
+      $listView.append(createElement(label, "cardview-label-remove"));
     }
   }
-  function cardviewLabels_refreshAddList() {
+  function refreshAddList() {
     const $listView = $(".cardview-labels-add-list").find("ol");
     $listView.html("");
-    for (let label of cards_getLabels()) {
-      $listView.append(cardviewLabels_createElement(label, "cardview-label-delete"));
+    for (let label of getLabels()) {
+      $listView.append(createElement(label, "cardview-label-delete"));
     }
   }
-  function cardviewLabels_getLabelID(labelElement) {
+  function getLabelID(labelElement) {
     const $labelElement = $(labelElement);
     return parseInt($labelElement.attr("data-value"));
   }
-  function cardviewLabels_getLabel(labelElement) {
-    return cards_getLabel(cardviewLabels_getLabelID(labelElement));
+  function getLabel2(labelElement) {
+    return getLabel(getLabelID(labelElement));
   }
-  function cardviewLabels_createElement(label, removalClass) {
+  function createElement(label, removalClass) {
     const labelID = label.id;
     const labelText = label.name || "(no name)";
     const labelBgColor = label.color || "#bab0b0";
@@ -11834,23 +11610,268 @@
     $li.find(".cardview-label-buttons").hide();
     return $li;
   }
-  function cardviewLabels_toggleAddList(speed = "fast") {
+  function toggleAddList(speed = "fast") {
     $(".cardview-labels-add-list").toggle(speed);
   }
-  function cardviewLabels_hideAddList(speed = "fast") {
+  function hideAddList(speed = "fast") {
     $(".cardview-labels-add-list").hide(speed);
+  }
+
+  // src/scripts/card-view.ts
+  var cardview_index = [];
+  var cardview_page = 1;
+  var cardview_editing = false;
+  function onCardsChanged() {
+    setCardIDs(cardview_index.filter(exists));
+  }
+  function setCardIDs(index) {
+    cardview_index = index;
+    onCardIDsChanged();
+  }
+  function onCardIDsChanged() {
+    $(".cardview-total-pages").text(cardview_index.length);
+    checkPage();
+    refreshPage();
+  }
+  function addCardID(cardID, page = void 0) {
+    page || (page = cardview_page);
+    cardview_index.splice(page - 1, 0, cardID);
+    onCardIDsChanged();
+  }
+  function removeCard(page = void 0) {
+    page || (page = cardview_page);
+    cardview_index.splice(page - 1, 1);
+    onCardIDsChanged();
+  }
+  function pageOf(cardID) {
+    return cardview_index.indexOf(cardID) + 1;
+  }
+  function getCurrentCardID() {
+    if (cardview_index.length === 0)
+      return void 0;
+    return cardview_index[getPage() - 1];
+  }
+  function getCurrentCard() {
+    const index = getCurrentCardID();
+    if (!index)
+      return void 0;
+    return get(index);
+  }
+  function getPageCount() {
+    return cardview_index.length;
+  }
+  function getPage() {
+    return cardview_page;
+  }
+  function checkPage() {
+    setPage(cardview_page);
+  }
+  function setPage(newValue) {
+    newValue = Math.max(1, Math.min(newValue, getPageCount()));
+    if (getPageCount() === 0)
+      newValue = 0;
+    const $view = $(".cardview-current-page");
+    if (newValue.toString() !== $view.html())
+      $view.html(newValue.toString());
+    if (newValue !== cardview_page) {
+      cardview_page = newValue;
+      refreshPage();
+    }
+  }
+  function init7() {
+    $(".cardview-labels-add-list").hide();
+    $(".cardview-title").on("input", function() {
+      const $input = $(this);
+      const card = getCurrentCard();
+      const value = cleanContent($input.html());
+      editProperty(card, "title", value, function() {
+        if ($input.html() !== card.title)
+          $input.html(card.title);
+      }, true);
+    });
+    $(".cardview-details").on("input", function() {
+      const $input = $(this);
+      const card = getCurrentCard();
+      const value = cleanContent($input.html());
+      editProperty(card, "content", value, function() {
+        if ($input.html() !== card.content)
+          $input.html(card.content);
+      }, true);
+    });
+    $(".cardview-show-answer").on("click", toggle);
+    $(".cardview-hide-answer").on("click", toggle);
+    $(".cardview-answer-text").on("input", function() {
+      const $input = $(this);
+      const card = getCurrentCard();
+      const value = cleanContent($input.html());
+      editProperty(card, "answerContent", value, function() {
+        if ($input.html() !== card.answerContent)
+          $input.html(card.answerContent);
+      }, true);
+    });
+    $(".cardview-nav-left").on("click", previousPage);
+    $(".cardview-nav-right").on("click", nextPage);
+    $(".cardview-current-page").on("input", function() {
+      const userInput = $(this).html();
+      const userPage = parseInt(userInput) || 1;
+      let page = Math.max(1, Math.min(userPage, getPageCount()));
+      setPage(page);
+      if (page.toString() !== userInput)
+        moveCursorToEnd();
+      refreshPage();
+    });
+    $(".cardview-config-toggle").on("click", toggleConfig);
+    $(".cardview-delete").on("click", function() {
+      const cardID = getCurrentCardID();
+      if (cardID)
+        deleteCard(cardID);
+    });
+    $(".cardview-edit").on("click", toggleEditing2);
+    init4();
+    init3();
+    init5();
+    init6();
+    initShortcuts();
+    setCardIDs([]);
+  }
+  function initShortcuts() {
+    function register(key, action) {
+      addShortcut({
+        "key": key,
+        "action": action
+      });
+    }
+    register(["ArrowLeft", "a"], previousPage);
+    register(["ArrowRight", "d"], nextPage);
+    register(" ", toggle);
+    register("q", toggleConfig);
+    register("e", toggleEditing2);
+    for (let i = 1; i < 10; i++)
+      register(i.toString(), () => {
+        if (isAnswerVisible()) {
+          if (i < 6)
+            setValue2(i);
+          else {
+            let value;
+            if (i === 6)
+              value = "untried";
+            else if (i === 7)
+              value = "incorrect";
+            else
+              value = "correct";
+            cardviewCompletion_setValue(value);
+          }
+        } else {
+          selectNumber(i);
+          showAnswer();
+        }
+      });
+  }
+  function nextPage() {
+    let page = getPage();
+    page++;
+    if (page > getPageCount())
+      page = 1;
+    hideAddList();
+    if (!isEditing())
+      hide();
+    setPage(page);
+  }
+  function previousPage() {
+    let page = getPage();
+    page--;
+    if (page < 1)
+      page = getPageCount();
+    hideAddList();
+    if (!isEditing())
+      hide();
+    setPage(page);
+  }
+  function refreshPage() {
+    const $titleView = $(".cardview-title");
+    const $contentView = $(".cardview-details");
+    const $imgView = $(".cardview-image");
+    const $answerView = $(".cardview-answer-text");
+    const $emptyMsgs = $(".cardview-empty-message, .cardview-config-empty-message");
+    const card = getCurrentCard();
+    if (!card) {
+      $emptyMsgs.show();
+      $titleView.hide();
+      $contentView.hide();
+      $imgView.hide();
+      $answerView.hide();
+    } else {
+      $emptyMsgs.hide();
+      const title = card.title || "";
+      $titleView.html(title);
+      hideIfEmpty($titleView);
+      const content = card.content || "";
+      $contentView.html(content);
+      hideIfEmpty($contentView);
+      const imgName = card.img_name;
+      if (imgName) {
+        const imgSrc = "data/images/" + imgName;
+        $imgView.attr("src", imgSrc);
+        $imgView.show("fast");
+      } else {
+        $imgView.hide("fast");
+      }
+      const answerContent = card.answerContent || "(No content)";
+      $answerView.html(answerContent);
+      hideIfEmpty($answerView);
+    }
+    refresh2();
+    refresh();
+    refresh3();
+    refresh4();
+  }
+  function toggleEditing2() {
+    if (isEditing())
+      stopEditing3();
+    else if (getCurrentCard())
+      startEditing3();
+  }
+  function isEditing() {
+    return cardview_editing;
+  }
+  function startEditing3() {
+    cardview_editing = true;
+    $(".cardview-edit").css("background-color", "#eee");
+    $(".cardview-title").prop("contenteditable", true);
+    $(".cardview-details").prop("contenteditable", true);
+    startEditing();
+    $(".cardview-show-answer").hide("fast");
+    $(".cardview-hide-answer").hide("fast");
+    $(".cardview-answer").show("fast");
+    $(".cardview-answer-text").prop("contenteditable", true);
+    refreshPage();
+  }
+  function stopEditing3() {
+    cardview_editing = false;
+    $(".cardview-edit").css("background-color", "#00000000");
+    $(".cardview-title").prop("contenteditable", false);
+    $(".cardview-details").prop("contenteditable", false);
+    stopEditing();
+    $(".cardview-show-answer").show("fast");
+    $(".cardview-hide-answer").show("fast");
+    $(".cardview-answer").hide("fast");
+    $(".cardview-answer-text").prop("contenteditable", false);
+    refreshPage();
+  }
+  function toggleConfig() {
+    $(".cardview-config").toggle("fast");
   }
 
   // src/scripts/index.ts
   $(function() {
     console.log("Starting... " + new Date().toLocaleTimeString());
-    cards_init();
-    keyboard_init();
+    init();
+    init2();
     undoRedo_init();
     $(".included-content").load("card-view.html", function() {
-      cardview_Init();
-      cardview_setCardIDs([...cards_getIDs()]);
-      cardview_setPage(150);
+      init7();
+      setCardIDs([...getIDs()]);
+      setPage(150);
     });
   });
 })();
