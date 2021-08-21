@@ -107,7 +107,8 @@ function init() {
         const card = getCurrentCard()
         const value = utility.cleanContent($input.html())
         undoRedo.editProperty(card, "title", value, function(){
-            if ($input.html() !== card.title)
+            if (card === undefined || card.title === undefined) $input.html("")
+            else if ($input.html() !== card.title)
                 $input.html(card.title)
         }, true)
     })
@@ -117,7 +118,8 @@ function init() {
         const card = getCurrentCard()
         const value = utility.cleanContent($input.html())
         undoRedo.editProperty(card, "content", value, function(){
-            if ($input.html() !== card.content)
+            if (card === undefined || card.content === undefined) $input.html("")
+            else if ($input.html() !== card.content)
                 $input.html(card.content)
         }, true)
     })
@@ -130,7 +132,8 @@ function init() {
         const card = getCurrentCard()
         const value = utility.cleanContent($input.html())
         undoRedo.editProperty(card, "answerContent", value, function(){
-            if ($input.html() !== card.answerContent)
+            if (card === undefined || card.answerContent === undefined) $input.html("(No content)")
+            else if ($input.html() !== card.answerContent)
                 $input.html(card.answerContent)
         }, true)
     })
@@ -267,7 +270,7 @@ function refreshPage() {
         $contentView.html(content);
         utility.hideIfEmpty($contentView)
 
-        const imgName = card.img_name
+        const imgName = card.imgName
         if (imgName) {
             const imgSrc = "data/images/" + imgName
             $imgView.attr("src", imgSrc)

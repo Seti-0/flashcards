@@ -19,10 +19,12 @@ class Label {
 
 class Card {
 
-    id; content; labels; options; correct;
+    id; title; imgName; content; labels; options; correct;
     completion; difficulty; answerContent;
 
     constructor(id:number,
+                title:string|undefined,
+                imgName:string|undefined,
                 content:string|undefined,
                 labels:number[],
                 options:string[],
@@ -31,7 +33,8 @@ class Card {
                 difficulty:number|undefined,
                 answerContent:string|undefined) {
 
-        this.id = id; this.content = content; this.labels = labels;
+        this.id = id; this.title=title; this.imgName=imgName; 
+        this.content = content; this.labels = labels;
         this.options = options; this.correct = correct;
         this.completion = completion; this.difficulty = difficulty;
         this.answerContent = answerContent
@@ -40,7 +43,7 @@ class Card {
 
 }
 
-const cards_map = new Map<number, Card>()
+const cardsMap = new Map<number, Card>()
 const labels_map = new Map<number, Label>()
 
 let nextCardID = 1
@@ -64,10 +67,12 @@ export {
 
 function init() {
 
-    cards_map.clear()
+    cardsMap.clear()
     for (let card of sourceCards)
-        cards_map.set(card.id, new Card(
+        cardsMap.set(card.id, new Card(
             card.id,
+            undefined,
+            card.img_name,
             card.content,
             card.labels,
             card.options,
@@ -102,29 +107,29 @@ function createNew() {
 }
 
 function add(card: any) {
-    cards_map.set(card.id, card)
+    cardsMap.set(card.id, card)
     cardview.onCardsChanged()
 }
 
 function get(cardID: number) {
-    return cards_map.get(cardID)
+    return cardsMap.get(cardID)
 }
 
 function cards_getAll() {
-    return cards_map.values()
+    return cardsMap.values()
 }
 
 function exists(cardID: number) {
-    return cards_map.has(cardID)
+    return cardsMap.has(cardID)
 }
 
 function remove(cardID: number) {
-    cards_map.delete(cardID)
+    cardsMap.delete(cardID)
     cardview.onCardsChanged()
 }
 
 function getIDs() {
-    return cards_map.keys()
+    return cardsMap.keys()
 }
 
 function createNewLabel() {
